@@ -6,7 +6,7 @@ import Data from "./data.json"
 import TestComponent from './TestComponent';
 
 // 型推論でjsonの型を定義
-type jsonData = typeof Data;
+// type JsonDataType = typeof Data;
 
 const name = "hello";
 let user: string = "username"; // 最初に型定義をすることをアノテーションという。
