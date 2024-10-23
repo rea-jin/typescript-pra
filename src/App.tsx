@@ -1,6 +1,12 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
+import Json from "./Json";
+import Data from "./data.json"
+import TestComponent from './TestComponent';
+
+// 型推論でjsonの型を定義
+type jsonData = typeof Data;
 
 const name = "hello";
 let user: string = "username"; // 最初に型定義をすることをアノテーションという。
@@ -110,7 +116,7 @@ interface PC {
   id:number;
   os: OS; // ここでenumを設定
 }
-
+// オブジェクトのデータタイプを指定して、OS
 const PC1:PC = {
   id:1,
   os: OS.Linux
@@ -119,23 +125,72 @@ const PC2:PC = {
   id:2,
   os: OS.Mac
 }
-function App() {
+
+// 型の互換性
+const comp1 = "test"; // 型は推論ではっきりしている comp1にはtestしかはいらない
+let comp2:string = comp1; // アノテーションで文字列だとわかる
+
+let comp3:string = "test";
+// let comp4:"test" = comp3; // これはできない 抽象度の高いものを指定している
+
+let func3 = (x:number)=>{}
+let func4 = (x:string)=>{}
+// func3 = func4; // 方が違うので、代入はできない
+
+// ジェネリックす
+interface GEN<T> { // 型のテンプレートだけ用意しておいて
+  item: T;
+}
+// 実際に使う時に型を指定する
+const gen0: GEN<string> = {item: "hello"}
+// const get1: GEN = {item:"hello"} // <>をつけないとエラー
+const gen2: GEN<number> = { item: 12} // 動的に変更できる
+
+interface GEN1<T=string> { // デフォルトを指定しておく
+  item: T;
+}
+const gen3: GEN1 = {item: "hello"} // 型を指定しなくてもデフォルトが適応される
+
+// extends
+interface GEN2<T extends string | number>{
+  item :T;
+}
+const gen4: GEN2<number> = { item :1} // stringかnumberのみしていできる
+
+// 関数の場合
+function fncGen<T>(props: T){
+  return { item: props}
+}
+const gen5 = fncGen("test"); // 型を指定しなくても推論が効く
+const gen6 = fncGen<number>(12); //動的に指定できる かえってくるitemもpropsによりテンプレートで動的に指定できる
+const gen7 = fncGen<string | null>(null);// nullもわたせる
+
+function fncGen1<T extends string | null>(props: T){
+  return {value:props};
+}
+const gen8 = fncGen1("hello"); // 
+// const gen9 = fncGen1(1223);// eエラーになる
+
+interface Props{
+  price : number;
+}
+function fncGen3<T extends Props>(props: T){
+  return {value : props.price}
+}
+const gen10 = fncGen3({price: 10}); // 渡すデータはinterfaceの数値型
+// アロー関数
+const fncGen4 = <T extends Props>(props: T)=>{
+  return {value :props.price}
+}
+
+// functional componentの型
+const App: React.FC = ()=> {
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        <TestComponent text="component"/>
       </header>
+      <Json jsonData={Data}/>
     </div>
   );
 }
