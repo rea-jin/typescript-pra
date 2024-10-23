@@ -17,12 +17,20 @@ interface UserData {
     const [user,setUser] = useState({id:1,name:"tarou"}); // 受け付けるのはオブジェクトのみ
     //  const [count, setCount] = useState<number | null>(null); // nullも受け付けたい場合、genericsをつかう
      setCount(1);
+    
+    const [inputData,setInputData] = useState("");
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>)=>{ // eventの型<generics>で動的に受け取る
+        setInputData(e.target.value);
+    }
      // 受け取ったpropsの属性を表示
     return(
         <div>
             <h1>{props.text}</h1>
             <h2>{count}</h2>
             <h3>{user.name}</h3>
+            <div>
+                <input type="text" value={inputData} onChange={handleInputChange} />
+            </div>
         </div>
 
     ) 
